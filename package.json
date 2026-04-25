@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "codegen": "playwright codegen"
+    "codegen": "playwright codegen",
+    "test:signup": "playwright test tests/email-signup.spec.ts --project=chromium --headed"
   },
   "keywords": [],
   "author": "",

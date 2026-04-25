@@ -28,8 +28,15 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
 
+    locale: 'ko-KR',
+    timezoneId: 'Asia/Seoul',
+    extraHTTPHeaders: {
+      'Accept-Language': 'ko-KR,ko;q=0.9',
+    },
+
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
   },
 
   /* Configure projects for major browsers */
