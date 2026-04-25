@@ -1,4 +1,5 @@
 import { test } from '@playwright/test';
+import { getVerificationCode } from './mail';
 
 const TEST_EMAIL = process.env.EMAIL!;
 
@@ -12,4 +13,7 @@ test('회원가입 → wid 가져오기', async ({ page }) => {
   await page.getByRole('textbox', { name: '이메일 required' }).click();
   await page.getByRole('textbox', { name: '이메일 required' }).fill(TEST_EMAIL);
   await page.getByRole('button', { name: '인증코드 받기' }).click();
+
+  const code = await getVerificationCode();
+  console.log('받은 인증코드:', code);
 });
