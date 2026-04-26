@@ -4,8 +4,20 @@ import { simpleParser } from 'mailparser';
 // 인증코드 가져오기 함수
 export async function getVerificationCode() {
   // .env 에서 아이디랑 비번 꺼내기
-  let user = process.env.EMAIL;
-  let pass = process.env.APP_PASSWORD;
+  let MAIL = process.env.MAIL!;
+  let TEST_EMAIL;
+  let TEST_APP_PASSWORD;
+  let HOST;
+
+  if (MAIL === 'naver') {
+    TEST_EMAIL = process.env.NAVER_USER;
+    TEST_APP_PASSWORD = process.env.NAVER_APP_PASSWORD;
+    HOST = 'imap.naver.com';
+  } else {
+    TEST_EMAIL = process.env.GMAIL_USER;
+    TEST_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;
+    HOST = 'imap.gmail.com';
+  }
 
   // 20번 시도 (3초씩 = 1분)
   for (let i = 0; i < 20; i++) {
@@ -13,10 +25,10 @@ export async function getVerificationCode() {
 
     // imap 접속
     let client = new ImapFlow({
-      host: 'imap.gmail.com',
+      host: HOST,
       port: 993,
       secure: true,
-      auth: { user: user!, pass: pass! },
+      auth: { user: TEST_EMAIL!, pass: TEST_APP_PASSWORD! },
       logger: false,
     });
     try {

@@ -1,11 +1,20 @@
 import { test } from '@playwright/test';
 import { getVerificationCode } from './mail';
 
-const TEST_EMAIL = process.env.EMAIL!;
-const TEST_PASSWORD = process.env.PASSWORD!;
-
 test('회원가입 → wid 가져오기', async ({ page }) => {
   test.setTimeout(180_000);
+
+  let MAIL = process.env.MAIL!;
+  let TEST_EMAIL;
+  let TEST_PASSWORD;
+  
+  if (MAIL === 'naver') {
+    TEST_EMAIL = process.env.NAVER_USER!;
+    TEST_PASSWORD = process.env.NAVER_PASSWORD!;
+  } else {
+    TEST_EMAIL = process.env.GMAIL_USER!;
+    TEST_PASSWORD = process.env.GMAIL_PASSWORD!;
+  }
 
   await page.goto('https://weverse.io/');
   await page.getByRole('button', { name: '로그인' }).click();
