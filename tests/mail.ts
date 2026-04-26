@@ -19,6 +19,8 @@ export async function getVerificationCode() {
     HOST = 'imap.gmail.com';
   }
 
+  let now = new Date();
+
   // 20번 시도 (3초씩 = 1분)
   for (let i = 0; i < 20; i++) {
     console.log('인증코드 찾는중...', (i + 1));
@@ -46,16 +48,20 @@ export async function getVerificationCode() {
       if (msg && msg.source) {
         let parsed = await simpleParser(msg.source);
 
-        // 메일 제목에서 6자리 숫자 찾기
-        let subject = parsed.subject || '';
-        let result = subject.match(/\d{6}/);
+        if (parsed.date && new Date(parsed.date) < now) {
+          console.log('옛날 메일이라 스킵:', parsed.date);
+        } else {
+          // 메일 제목에서 6자리 숫자 찾기
+          let subject = parsed.subject || '';
+          let result = subject.match(/\d{6}/);
 
-        if (result) {
-          let code = result[0];
-          console.log('찾음!', code);
-          lock.release();
-          await client.logout();
-          return code;
+          if (result) {
+            let code = result[0];
+            console.log('찾음!', code);
+            lock.release();
+            await client.logout();
+            return code;
+          }
         }
       }
     }
