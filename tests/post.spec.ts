@@ -58,9 +58,18 @@ test('포스트 쓰기, 확인, 수정, 삭제', async ({ page }) => {
   // 커뮤니티 가입하기
   await page.getByRole('button').filter({ hasText: '커뮤니티 찾기' }).click();
   await page.getByRole('textbox', { name: 'search' }).fill(COMMUNITY_NAME);
-  await page.getByRole('link', { name: COMMUNITY_NAME }).click();
+
+  const searchResultItem = page
+    .getByRole('listitem')
+    .filter({ has: page.getByRole('button', { name: '가입' }) })
+    .filter({ hasText: COMMUNITY_NAME });
+
+  await expect(searchResultItem).toBeVisible();
+  await searchResultItem.getByRole('link', { name: COMMUNITY_NAME }).click();
   await page.locator('#iwma').getByRole('button', { name: '가입하기' }).click();
   await page.getByLabel('wev3 modal').locator('button').filter({ hasText: '가입하기' }).click();
+
+  
 });
 
 
