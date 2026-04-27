@@ -124,6 +124,15 @@ test('포스트 쓰기, 확인, 수정, 삭제', async ({ page }) => {
   await expect(myPost2).toBeVisible({ timeout: 10000 });
   await expect(myPost2.locator('img[class*="thumbnail"]').first()).toBeVisible({ timeout: 5000 });
 
+  // 포스트 삭제
+  await myPost2.getByRole('button', { name: 'more', exact: true }).click();
+  await page.getByRole('button', { name: /^(삭제하기 삭제하기|Delete Delete)$/ }).click();
+  await page.locator('button').filter({ hasText: '확인' }).click();
+
+  // 등록한 포스트가 없을 때 메시지 확인
+  await page.getByText('아직 작성한 포스트가 없습니다.').waitFor({ state: 'visible', timeout: 5000 });
+
+  await page.waitForTimeout(3000);
 });
 
 
