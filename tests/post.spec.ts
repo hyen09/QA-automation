@@ -10,6 +10,8 @@ test('포스트 쓰기, 확인, 수정, 삭제', async ({ page }) => {
   let TEST_EMAIL;
   let TEST_PASSWORD;
   let COMMUNITY_NAME = process.env.COMMUNITY_NAME!;
+  let POST_TEXT = '너무 좋아요';
+  let POST_IMAGE = path.join(__dirname, './image1.png');
   
   if (MAIL === 'naver') {
     TEST_EMAIL = process.env.NAVER_USER!;
@@ -69,7 +71,30 @@ test('포스트 쓰기, 확인, 수정, 삭제', async ({ page }) => {
   await page.locator('#iwma').getByRole('button', { name: '가입하기' }).click();
   await page.getByLabel('wev3 modal').locator('button').filter({ hasText: '가입하기' }).click();
 
-  
+  // 포스트 쓰기
+  await page.locator('a[class*="global-header-profile"]').click();
+  await page.getByText(`${COMMUNITY_NAME} 팬들과 이야기를 나눠보세요`).click();
+  await page.locator('#wev-editor').fill(POST_TEXT);
+  await page.getByLabel('attach photo', { exact: true }).setInputFiles(
+    POST_IMAGE
+  );
+  await page.getByText('확인').click();
+  await page.getByText('등록').click();
+
+  // SMS 인증
+  const smsVerify = page.getByText('SMS 인증');
+  try {
+    await smsVerify.waitFor({ state: 'visible', timeout: 5000 });
+    await page.locator('button').filter({ hasText: '인증하기' }).click();
+
+    // 수동 인증 진행
+    await page.pause();
+
+    // SMS 인증 다이얼로그 닫힌 후
+    await page.getByText('등록').click();
+  } catch (e) {
+    console.log('SMS 인증 필요 없거나 실패:', e);
+  }
 });
 
 
