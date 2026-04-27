@@ -42,4 +42,21 @@ test('회원가입 → wid 가져오기', async ({ page }) => {
   await page.getByRole('button', { name: '가입하기' }).click();
   await page.getByRole('button', { name: '확인', exact: true }).click();
   await page.getByRole('button', { name: '시작하기' }).click();
+
+  const response = await page.waitForResponse(async (resp) => {
+    if (!resp.ok()) return false;
+    try {
+      const json = await resp.json();
+      console.log('json:', json);
+      return 'wid' in json;
+    } catch {
+      return false;
+    }
+  });
+
+  const data = await response.json();
+  const wid = data.wid;
+  console.log("ID:", TEST_EMAIL);
+  console.log("PASSWORD:", TEST_PASSWORD);
+  console.log('WID:', wid);
 });
