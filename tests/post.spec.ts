@@ -12,6 +12,8 @@ test('포스트 쓰기, 확인, 수정, 삭제', async ({ page }) => {
   let COMMUNITY_NAME = process.env.COMMUNITY_NAME!;
   let POST_TEXT = '너무 좋아요';
   let POST_IMAGE = path.join(__dirname, './image1.png');
+  let POST_TEXT2 = '멋있어요';
+  let POST_VIDEO = path.join(__dirname, './video1.mov');
   
   if (MAIL === 'naver') {
     TEST_EMAIL = process.env.NAVER_USER!;
@@ -95,6 +97,33 @@ test('포스트 쓰기, 확인, 수정, 삭제', async ({ page }) => {
   } catch (e) {
     console.log('SMS 인증 필요 없거나 실패:', e);
   }
+
+  // 포스트가 보이는지 10초동안 확인
+  const myPost = page.getByRole('listitem')
+    .filter({ hasText: POST_TEXT })
+  await expect(myPost).toBeVisible({ timeout: 10000 });
+  await expect(myPost.locator('img[class*="thumbnail"]').first()).toBeVisible({ timeout: 5000 });
+
+  // 포스트 수정
+  await myPost.getByRole('button', { name: 'more', exact: true }).click();
+  await page.getByRole('button', { name: /^(수정하기 수정하기|Edit Edit)$/ }).click();
+  await page.locator('button').filter({ hasText: 'delete image' }).click();
+  await page.waitForTimeout(3000);
+  await page.locator('#wev-editor').click();
+  await page.waitForTimeout(3000);
+  await page.keyboard.press('ControlOrMeta+A');
+  await page.keyboard.press('Backspace');
+  await page.keyboard.type(POST_TEXT2);
+  await page.getByLabel('attach video', { exact: true }).setInputFiles(POST_VIDEO);
+  await page.getByText('확인').click();
+  await page.getByText('등록').click();
+
+  const myPost2 = page.getByRole('listitem')
+  .filter({ hasText: POST_TEXT })
+  
+  await expect(myPost2).toBeVisible({ timeout: 10000 });
+  await expect(myPost2.locator('img[class*="thumbnail"]').first()).toBeVisible({ timeout: 5000 });
+
 });
 
 
